@@ -42,7 +42,8 @@ def register():
 def update():
     user_id = get_jwt_identity()
     try: 
-        data = user_schema.load(data=request.json, exclude=("password"))
+        data = user_schema.load(request.json)
+        data["password"] = EM.create_hash(data["password"])
         user = user_model.update(ObjectId(user_id), data)
         return RM.success({"data": user})
     except ValidationError as err:
@@ -60,4 +61,6 @@ def delete():
 def get_user():
     user_id = get_jwt_identity()
     user = user_model.find_by_id(ObjectId(user_id))
+    if not user:
+        return RM.error("El usuario no existe")
     return RM.success(user)

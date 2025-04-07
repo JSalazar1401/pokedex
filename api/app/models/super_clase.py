@@ -5,13 +5,17 @@ class SuperClass:
         self.collection = mongo.db[collection]
     
     def find_all(self):
-        data = self.collection.find()
-        return list(data)
+        data = list(self.collection.find())
+        for datum in data:
+            datum["_id"] = str(datum["_id"])
+        return data
 
     def find_by_id(self,object_id):
         datum = self.collection.find_one({
             "_id": object_id
         })
+        if datum:
+            datum["_id"] = str(datum["_id"]) 
         return datum
     
     def create(self,data):
