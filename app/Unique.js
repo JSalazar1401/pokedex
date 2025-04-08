@@ -1,7 +1,9 @@
-import React from 'react';
-import { View, Text, Image, StyleSheet, ScrollView } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Ionicons from "@expo/vector-icons/Ionicons"
+import LoadingModal from './Modal';
+import { request } from './requests';
 
 const typeColors = {
     Fire: 'red',
@@ -23,10 +25,23 @@ const typeColors = {
     Normal: 'lightgray',
 };
 export default function Unique({ route }) {
+    const [loading, setLoading] = useState(false);
     const { pokemon } = route.params;
     const bgColor = typeColors[pokemon.Type1] || 'lightgray';
+
+    const addFavorite = async (id)=>{
+        try {
+            setLoading(true)
+            await request.post("/favorite-pokemons/", {pokemon_id:id});
+        } catch (error) {
+            Alert.alert("Algo salio mal al guardar un favorito")
+        }finally{
+            setLoading(false)
+        }
+    }
     return (
         <SafeAreaView style={[styles.background, { backgroundColor: bgColor }]}>
+            <LoadingModal visible={loading}/>
             <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
                 <View style={styles.head}>
                     <Text style={styles.arrow}><Ionicons name="arrow-back-circle-sharp" size={30} /></Text>
@@ -63,7 +78,9 @@ export default function Unique({ route }) {
                             )
                         }
                     </View>
-
+                    <View style={styles.favoriteButton}>
+                        <TouchableOpacity onPress={()=>addFavorite(pokemon._id)}><Text><Ionicons name="heart-dislike-outline" size={40} /></Text></TouchableOpacity>
+                    </View>
                     <View style={styles.stats}>
                         <Text style={styles.titleStats}>Estadísticas base</Text>
                         {Object.entries(pokemon.stats).map(([key, value]) => (
@@ -106,7 +123,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
     },
     idPokemon: {
-        fontSize:20,
+        fontSize: 20,
         color: 'white',
         fontWeight: 'bold',
     },
@@ -188,4 +205,11 @@ const styles = StyleSheet.create({
         height: '100%',
         backgroundColor: 'blueviolet',
     },
+    favoriteButton: {
+        backgroundColor: "#cac9b1",
+        borderRadius: 100,
+        justifyContent: "center",
+        alignContent: "center",
+        width: 40
+    }
 });
