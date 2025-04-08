@@ -3,6 +3,7 @@ import { View, Text, Image, StyleSheet, FlatList, Alert, Pressable } from 'react
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { request } from './requests';
 import { useNavigation } from '@react-navigation/native';
+import LoadingModal from './Modal';
 
 const typeColors = {
     Fire: 'red',
@@ -26,6 +27,7 @@ const typeColors = {
 
 
 export const Home = () => {
+    const [loading, setLoading] = useState(false)
     const {navigate} = useNavigation()
     const [pokemons, setPokemons] = useState([]);
     useEffect(() => {
@@ -34,10 +36,13 @@ export const Home = () => {
 
     const getData = async () => {
         try {
+            setLoading(true)
             const { data } = await request.get("/pokemon/");
             setPokemons(data);
         } catch (error) {
             Alert.alert("Ocurrrio un error al obtener los pokemones", "No se puedieron obtener los pokemones")
+        }finally{
+            setLoading(false)
         }
     }
 
@@ -83,6 +88,7 @@ export const Home = () => {
 
     return (
         <SafeAreaView>
+            <LoadingModal visible={loading}/>
             <FlatList
                 data={pokemons}
                 renderItem={pokemon}

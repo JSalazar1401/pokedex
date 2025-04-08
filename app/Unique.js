@@ -31,9 +31,14 @@ export default function Unique({ route }) {
                 <View style={styles.head}>
                     <Text style={styles.arrow}><Ionicons name="arrow-back-circle-sharp" size={30} /></Text>
                     <View style={styles.nameContainer}>
-                        <Text style={[styles.name, {color:bgColor}]}>{pokemon.Name}</Text>
+                        <Text style={[styles.name, { color: bgColor }]}>{pokemon.Name}</Text>
+                        {
+                            pokemon.Form != " " && (
+                                <Text style={[styles.name, { color: bgColor }]}> - {pokemon.Form}</Text>
+                            )
+                        }
                     </View>
-                    <Text style={styles.idPokemon}>{pokemon.ID}</Text>
+                    <Text style={styles.idPokemon}>#{pokemon.ID}</Text>
                 </View>
 
                 <View style={styles.main}>
@@ -46,14 +51,14 @@ export default function Unique({ route }) {
                             style={styles.image}
                         />
                     </View>
-                    <Text style={styles.arrowSmall}><Ionicons name='arrow-forward' size={30}/></Text>
+                    <Text style={styles.arrowSmall}><Ionicons name='arrow-forward' size={30} /></Text>
                 </View>
 
                 <View style={styles.footer}>
                     <View style={styles.tags}>
                         <Text style={[styles.tag, { backgroundColor: typeColors[pokemon.Type1] || 'gray' }]}>{pokemon.Type1}</Text>
                         {
-                            pokemon.Type2 && (
+                            pokemon.Type2 != " " && (
                                 <Text style={[styles.tag, { backgroundColor: typeColors[pokemon.Type2] || 'gray' }]}>{pokemon.Type2}</Text>
                             )
                         }
@@ -65,7 +70,7 @@ export default function Unique({ route }) {
                             <View style={styles.row} key={key}>
                                 <Text style={styles.stat}>{key}</Text>
                                 <View style={styles.progressBar}>
-                                    <View style={[styles.progressFill, { width: `${(value / 100) * 100}%` }]} />
+                                    <View style={[styles.progressFill, { width: `${(value / 200) * 100}%` }]} />
                                 </View>
                             </View>
                         ))}
@@ -98,17 +103,18 @@ const styles = StyleSheet.create({
     },
     name: {
         fontWeight: 'bold',
-        fontSize: 18,
+        fontSize: 20,
     },
     idPokemon: {
+        fontSize:20,
         color: 'white',
         fontWeight: 'bold',
     },
     main: {
         flexDirection: 'row',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 20,
+        margin: 20,
     },
     arrowSmall: {
         color: 'white',
@@ -117,24 +123,24 @@ const styles = StyleSheet.create({
     imgPokemon: {
         borderRadius: 100,
         backgroundColor: 'white',
-        padding: 10,
+        padding: 5,
         borderWidth: 10,
         borderColor: 'white',
     },
     image: {
-        width: 100,
-        height: 100,
+        width: 150,
+        height: 150,
         borderRadius: 100,
         backgroundColor: 'black',
         padding: 10,
     },
     footer: {
-        marginTop: -50,
         padding: 30,
         backgroundColor: 'white',
         borderTopLeftRadius: 30,
         borderTopRightRadius: 30,
         alignItems: 'center',
+        height: "100%"
     },
     tags: {
         flexDirection: 'row',

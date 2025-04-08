@@ -9,7 +9,6 @@ class SuperClass:
         deserealize_data = []
         for datum in data:
             datum["_id"] = str(datum["_id"])
-            print(datum["Sp"])
             stats = {
                 "HP": datum["HP"],
                 "ATK": datum["Attack"],
