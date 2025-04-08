@@ -3,53 +3,56 @@ import { useState } from 'react';
 import { StyleSheet, Text, View, Image, TextInput, Pressable, Alert } from 'react-native';
 import { request } from './requests';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
-export const Login = () => {
+export const Login = ({ onLogin }) => {
     const [data, setData] = useState({});
     const [loading, setLoading] = useState(false);
     const { navigate } = useNavigation();
 
-    const onChange = (target,value) =>{
+    const onChange = (target, value) => {
         const newData = data;
         newData[target] = value;
         setData(newData)
     }
 
-    const submit = async () =>{
+    const submit = async () => {
         try {
             setLoading(true)
             const res = await request.post("/users/login", data);
             const { token } = res.data;
             AsyncStorage.setItem("token", token);
-            navigate("Home")
+            onLogin();
         } catch (error) {
-            Alert.alert("Ocurrio un error","Credenciales invalidas")
+            Alert.alert("Ocurrio un error", "Credenciales invalidas")
         }
         setLoading(false)
     }
     return (
-        <View style={styles.container}>
-            <View>
-                <Image source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/2052px-Pok%C3%A9_Ball_icon.svg.png" }}
-                    width={200}
-                    height={200}
-                />
+        <SafeAreaView style={styles.container}>
+            <View style={styles.container}>
+                <View>
+                    <Image source={{ uri: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Pok%C3%A9_Ball_icon.svg/2052px-Pok%C3%A9_Ball_icon.svg.png" }}
+                        width={200}
+                        height={200}
+                    />
+                </View>
+                <View>
+                    <Text style={styles.title}>Iniciar Sesion</Text>{/* title */}
+                    <Text style={styles.label}>Correo:</Text>
+                    <TextInput style={styles.input} onChangeText={(text) => onChange("email", text)} autoCapitalize='none' />
+                    <Text style={styles.label}>Contraseña:</Text>
+                    <TextInput style={styles.input} onChangeText={(text) => onChange("password", text)} secureTextEntry />
+                    <Pressable style={styles.send} onPress={submit} disabled={loading}>
+                        <Text style={styles.send.textButton}>Enviar</Text>
+                    </Pressable>
+                </View>
+                <View style={styles.containerFooter}> {/* container-footer */}
+                    <Text style={styles.containerFooter.texts}>¿Olvidaste tu contraseña?</Text>
+                    <Text style={styles.containerFooter.texts}>Registrate</Text>
+                </View>
             </View>
-            <View>
-                <Text style={styles.title}>Iniciar Sesion</Text>{/* title */}
-                <Text style={styles.label}>Correo:</Text>
-                <TextInput style={styles.input} onChangeText={(text)=>onChange("email", text)} autoCapitalize='none'/>
-                <Text style={styles.label}>Contraseña:</Text>
-                <TextInput style={styles.input} onChangeText={(text)=>onChange("password", text)} secureTextEntry />
-                <Pressable style={styles.send} onPress={submit} disabled={loading}>
-                    <Text style={styles.send.textButton}>Enviar</Text>
-                </Pressable>
-            </View>
-            <View style={styles.containerFooter}> {/* container-footer */}
-                <Text style={styles.containerFooter.texts}>¿Olvidaste tu contraseña?</Text>
-                <Text style={styles.containerFooter.texts}>Registrate</Text>
-            </View>
-        </View>
+        </SafeAreaView>
     )
 }
 const styles = StyleSheet.create({

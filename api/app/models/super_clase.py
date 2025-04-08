@@ -5,10 +5,27 @@ class SuperClass:
         self.collection = mongo.db[collection]
     
     def find_all(self):
-        data = list(self.collection.find())
+        data = list(self.collection.find().sort("ID",1))
+        deserealize_data = []
         for datum in data:
             datum["_id"] = str(datum["_id"])
-        return data
+            print(datum["Sp"])
+            stats = {
+                "HP": datum["HP"],
+                "ATK": datum["Attack"],
+                "DEF": datum["Defense"],
+                "SP.Atk": datum["Sp"][" Atk"],
+                "SP.Def": datum["Sp"][" Def"],
+                "SPD": datum["Speed"],
+            }
+            datum["stats"] = stats
+            datum.pop("HP")
+            datum.pop("Attack")
+            datum.pop("Defense")
+            datum.pop("Speed")
+            datum.pop("Sp")
+            deserealize_data.append(datum)
+        return deserealize_data
 
     def find_by_id(self,object_id):
         datum = self.collection.find_one({
