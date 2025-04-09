@@ -1,4 +1,4 @@
-import { NavigationContainer, useStateForPath } from '@react-navigation/native';
+import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Login } from './Login';
 import { navigationRef } from './navigation';
@@ -6,16 +6,10 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useState } from 'react';
 import { Home } from './Home';
 import Ionicons from "@expo/vector-icons/Ionicons"
-import { Text, View } from 'react-native';
 import Unique from './Unique';
+import { ListFavorites } from './ListFavorites';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
-
-function FavoriteScreen() {
-  return (
-    <View><Text>Vista favoritos</Text></View>
-  )
-}
 
 function Tabs() {
   return (
@@ -37,7 +31,7 @@ function Tabs() {
       tabBarInactiveTintColor: 'gray',
     })}>
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="Favorites" component={FavoriteScreen} />
+      <Tab.Screen name="Favorites" component={ListFavorites} />
     </Tab.Navigator>
   );
 }

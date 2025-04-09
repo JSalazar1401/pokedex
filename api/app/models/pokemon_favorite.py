@@ -13,12 +13,66 @@ class PokemonFavorites(SuperClass):
         raise NotImplementedError("Los pokemones no se pueden encontrar de manera individual")
     
     def find_all(self, user_id):
-        data = list(self.collection.find({"user_id": ObjectId(user_id)}))
+        #data = list(self.collection.find({"user_id": ObjectId(user_id)}))
+        #AGGREGATE
+        #Pipelines > multiples objetos
+        data = list(self.collection.aggregate([
+                #Primer paso hacer match con el usuario!
+                {
+                    "$match":{
+                        "user_id": ObjectId(user_id)
+                    }
+                },
+                #[Multiples registros]
+                {
+                    "$lookup":{
+                        "from":"pokemons",
+                        "localField":"pokemon_id",
+                        "foreignField":"_id",
+                        "as":"pokemon"
+                    }
+                },
+                {"$unwind":"$pokemon"},
+                #Multiples registros pero ahora con un campo extra que es "pokemon"
+                {
+                    "$lookup":{
+                        "from":"users",
+                        "localField":"user_id",
+                        "foreignField":"_id",
+                        "as":"user"
+                    }
+                },
+                {"$unwind":"$user"},
+                #Multiples registros pero ahora con un campo extra mas que es "user"
+                {
+                    "$project":{
+                        "user":1,
+                        "pokemon":1,    
+                        "_id":0
+                    }
+                }
+            ]))
+        formated_data = []
         for datum in data:
-            datum["user_id"]=str(datum["user_id"])
-            datum["pokemon_id"]=str(datum["pokemon_id"])
-            datum["_id"]=str(datum["_id"])
-        return data
+            print(datum)
+            datum["user"]["_id"]=str(datum["user"]["_id"])
+            datum["pokemon"]["_id"]=str(datum["pokemon"]["_id"])
+            stats = {
+                "HP": datum["pokemon"]["HP"],
+                "ATK": datum["pokemon"]["Attack"],
+                "DEF": datum["pokemon"]["Defense"],
+                "SP.Atk": datum["pokemon"]["Sp"][" Atk"],
+                "SP.Def": datum["pokemon"]["Sp"][" Def"],
+                "SPD": datum["pokemon"]["Speed"],
+            }
+            datum["pokemon"]["stats"] = stats
+            datum["pokemon"].pop("HP")
+            datum["pokemon"].pop("Attack")
+            datum["pokemon"].pop("Defense")
+            datum["pokemon"].pop("Speed")
+            datum["pokemon"].pop("Sp")
+            formated_data.append(datum)
+        return formated_data
     
     def create(self, data):
         print("LA DATA DEL POKEMON",data)
